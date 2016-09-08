@@ -74,4 +74,38 @@ class Entry(models.Model):
 		return(self.slug)
 
 
+class Link(models.Model):
+	title= models.CharField(max_length=100, unique=False)
+	description = models.TextField(blank=True)
+	description_html= models.TextField(blank=True)
+	url=models.URLField(unique=True)
+	posted_by= models.ForeignKey(User)
+	pub_date= models.DateField(default = datetime.now, blank=False)
+	slug= models.SlugField(unique_for_date = 'pub_date')
+	tags = TagField()
+	enable_comments= models.BooleanField(default=True)
+	post_elsewhere = models.BooleanField('Post to Delicious', default=True)
+	via_name= models.CharField('Via',max_length=100, help_text="the site you spotted the link" )
+	via_url = models.URLField('Via URL', blank=True, help_text="Link you found the story")
+	class Meta:
+		ordering =['-pub_date']
+	def __unicode__(self):
+		return self.title
+	def save(self):
+		if self.description:
+			self.description_html= markdown(self.description)
+		if not self.id and self.post_elsewhere:
+			import pydelicious
+			from django.utils.encoding import smart_str
+			pydelicious.add(settings.DELICIOUS_USERNAME, settings.DELICIOUS_PASSWORD,
+							smart_str(self.url),smart_str(self.title), smart_str(self.tags))
+		super(Link, self).save()
+	@permalink
+	def get_absolute_url(self):
+		return('entry_detail', None, {'slug':self.slug})
+
+
+
+def __unicode__(self):
+        return self.user.username
 
