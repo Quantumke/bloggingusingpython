@@ -59,3 +59,33 @@ def view_more(request, slug):
 
 	},RequestContext(request))
 
+def search(request):
+	query=request.GET.get('q', '')
+	results=[]
+	marque = Entry.objects.all()
+	paginator=Paginator(marque,5)
+	page = request.GET.get('page')
+	try:
+		result=paginator.page(page)
+	except PageNotAnInteger:
+		result=paginator.page(1)
+	except EmptyPage:
+		result=paginator.page(paginator.num_pages)
+	if query:
+		results=Entry.objects.filter(title__contains=query)
+		count=results.count()
+		newest = Entry.objects.filter(featured=True)[:4]
+	return render_to_response('search.html', {'query':query, 'results':results,
+											  'result':result, 'count':count,
+											  'newest':newest,
+											  'current_path': request.get_full_path
+
+											  })
+def category_list(request):
+	return render_to_response('category_list.html',
+                                  { 'object_list': Category.objects.all() })
+
+def category_detail(request, slug):
+	return render_to_response('entry_detail.html', {
+		'object': get_object_or_404(Entry, category=slug)
+	}, RequestContext(request))
