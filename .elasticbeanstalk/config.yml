@@ -1,0 +1,13 @@
+branch-defaults:
+  default:
+    environment: ishidigitalblog-dev
+    group_suffix: null
+  master:
+    environment: ishidigitalblog-dev
+global:
+  application_name: ishidigitalblog
+  default_ec2_keyname: aws-eb
+  default_platform: Python 2.7
+  default_region: ap-south-1
+  profile: eb-cli
+  sc: null
