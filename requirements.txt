@@ -1,0 +1,4 @@
+django==1.5
+psycopg2
+django-contrib-comments
+django.contrib.markup
